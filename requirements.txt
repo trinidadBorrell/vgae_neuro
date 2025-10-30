@@ -1,0 +1,9 @@
+torch
+scikit-learn
+scipy
+numpy
+mne
+numba
+matplotlib
+
+
