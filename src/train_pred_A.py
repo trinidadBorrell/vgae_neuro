@@ -533,12 +533,11 @@ def visualize_adjacency_matrices(adj_true, adj_pred, save_dir, filename='adjacen
     
     if torch.is_tensor(adj_pred):
         adj_pred = adj_pred.detach().cpu().numpy()
-    
-    # Apply sigmoid to predictions if needed (convert logits to probabilities)
-    adj_pred_prob = 1 / (1 + np.exp(-adj_pred))
-    
-    # Create figure with three subplots
-    fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+
+    # Flatten, apply comprehension, then reshape
+    adj_pred_binary = np.array([1 if i > 0.5 else 0 for i in adj_pred.flatten()]).reshape(64, 64)    # Create figure with three subplots
+
+    fig, axes = plt.subplots(1, 4, figsize=(24, 5))
     
     # Plot true adjacency
     im1 = axes[0].imshow(adj_true, cmap='Blues', aspect='auto', vmin=0, vmax=1)
@@ -548,19 +547,26 @@ def visualize_adjacency_matrices(adj_true, adj_pred, save_dir, filename='adjacen
     plt.colorbar(im1, ax=axes[0], fraction=0.046, pad=0.04)
     
     # Plot predicted adjacency (probabilities)
-    im2 = axes[1].imshow(adj_pred_prob, cmap='Reds', aspect='auto', vmin=0, vmax=1)
+    im2 = axes[1].imshow(adj_pred_binary, cmap='Blues', aspect='auto', vmin=0, vmax=1)
     axes[1].set_title('Predicted Adjacency Matrix', fontsize=14, fontweight='bold')
     axes[1].set_xlabel('Node Index')
     axes[1].set_ylabel('Node Index')
     plt.colorbar(im2, ax=axes[1], fraction=0.046, pad=0.04)
     
     # Plot difference (error)
-    diff = np.abs(adj_true - adj_pred_prob)
+    diff = np.abs(adj_true - adj_pred_binary)
     im3 = axes[2].imshow(diff, cmap='RdYlGn_r', aspect='auto', vmin=0, vmax=1)
     axes[2].set_title('Absolute Difference', fontsize=14, fontweight='bold')
     axes[2].set_xlabel('Node Index')
     axes[2].set_ylabel('Node Index')
     plt.colorbar(im3, ax=axes[2], fraction=0.046, pad=0.04)
+
+    # Plot predicted adjacency (probabilities)
+    im4 = axes[3].imshow(adj_pred, cmap='RdYlGn_r', aspect='auto', vmin=0, vmax=1)
+    axes[3].set_title('Predicted Probabilty', fontsize=14, fontweight='bold')
+    axes[3].set_xlabel('Node Index')
+    axes[3].set_ylabel('Node Index')
+    plt.colorbar(im4, ax=axes[3], fraction=0.046, pad=0.04)
     
     plt.tight_layout()
     
@@ -637,7 +643,7 @@ def parse_args():
     # Output arguments
     parser.add_argument('--output-dir', type=str, default='results',
                         help='Base directory for saving results')
-    parser.add_argument('--save-model', action='store_true',
+    parser.add_argument('--save-model', default = True, action='store_true',
                         help='Save trained model weights')
     parser.add_argument('--save-viz', action='store_true', default=True,
                         help='Save visualization of adjacency matrices')

@@ -6,7 +6,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np 
 import args
-
 class VGAE(nn.Module):
 	def __init__(self, adj):
 		super(VGAE,self).__init__()

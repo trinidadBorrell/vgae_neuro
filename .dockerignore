@@ -30,6 +30,7 @@ Thumbs.db
 
 *.log
 results/
+results_features/
 data/
 explore/
 

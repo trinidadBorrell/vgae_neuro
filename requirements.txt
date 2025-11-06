@@ -7,4 +7,3 @@ numba
 matplotlib
 pandas
 eeg_positions
-
